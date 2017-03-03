@@ -7,22 +7,33 @@ var URL = process.env.URL;
 
 exports.handler = function(event, context) {
   var key = event.queryStringParameters.key;
-  var match = key.match(/(\d+)x(\d+)\/(.*)/);
-  var width = parseInt(match[1], 10);
-  var height = parseInt(match[2], 10);
-  var originalKey = match[3];
+  var keys = key.split(/_|\./);
+  var baseImage = keys[0];
+  var width = parseInt(keys[1], 10);
+  var extension = keys.slice(-1)[0];
+  var height;
+  if(keys.length == 4){
+    height = keys[2];
+  }  
+  var originalKey = baseImage + '.' + extension;
+
+  if(extension.toLowerCase()=='jpg'){
+    extension = 'jpeg';
+  }
 
   S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
-    .then((data) => Sharp(data.Body)
-        .resize(width, height)
-        .toFormat('png')
-        .toBuffer()
+    .then((data) => 
+      Sharp(data.Body)
+          .resize(width, height)
+          .withoutEnlargement(true)
+          .toFormat(extension)
+          .toBuffer()
     )
     .then((buffer) => S3.putObject({
         Body: buffer,
         Bucket: BUCKET,
-        ContentType: 'image/png',
-        Key: key
+        ContentType: 'image/' + extension,
+        Key: key.toLowerCase()
       }).promise()
     )
     .then(() => context.succeed({
