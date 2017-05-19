@@ -6,6 +6,7 @@ var BUCKET = process.env.BUCKET;
 var URL = process.env.URL;
 
 exports.handler = function(event, context) {
+  console.log(event.queryStringParameters.key);
   var key = event.queryStringParameters.key;
   var keys = key.split(/_|\./);
   var baseImage = keys[0];
@@ -13,8 +14,11 @@ exports.handler = function(event, context) {
   var extension = keys.slice(-1)[0];
   var height;
   if(keys.length == 4){
-    height = keys[2];
+    height = parseInt(keys[2], 10);
   }  
+  if(width<=0){
+    width = null;
+  }
   var originalKey = baseImage + '.' + extension;
 
   if(extension.toLowerCase()=='jpg'){
