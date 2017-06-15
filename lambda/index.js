@@ -11,24 +11,37 @@ exports.handler = function (event, context) {
   console.log(event.queryStringParameters.key);
   var key = event.queryStringParameters.key;
   var keys = key.split(/_|\./);
-  var baseImage = keys[0];
-  var width = parseInt(keys[1], 10);
-  var extension = keys.slice(-1)[0];
+  var keys_ = key.split(/_/);
+  var baseImage;
+  var width;
   var height;
-  if (keys.length == 4) {
-    height = parseInt(keys[2], 10);
+  var extension = keys.slice(-1)[0];
+  var widthAndHeight = (
+    keys.length >= 3 
+    && !isNaN(parseInt(keys.slice(-3)[0]))
+    && !isNaN(parseInt(keys.slice(-2)[0])));
+
+  if (widthAndHeight){
+    width = parseInt(keys.slice(-3)[0], 10);
+    height = parseInt(keys.slice(-2)[0], 10);
+    baseImage = keys_.slice(0, -2).join('_');
   }
-  if (width <= 0) {
-    width = null;
-  }
+  else {
+    width = parseInt(keys.slice(-2)[0], 10);   
+    baseImage = keys_.slice(0, -1).join('_');
+  }  
+  
   var originalKey = baseImage + '.' + extension;
 
   if (extension.toLowerCase() == 'jpg') {
     extension = 'jpeg';
   }
 
+  console.log(`getObject: ${BUCKET}/${originalKey}`);
+
   S3.getObject({ Bucket: BUCKET, Key: originalKey }).promise()
     .then((data) => {
+      console.log(`resizing with height: ${height} width: ${width}`);
       if (height && width) {
         return Sharp(data.Body)
           .resize(width, height)
@@ -46,20 +59,23 @@ exports.handler = function (event, context) {
       }
     }
     )
-    .then((buffer) =>
+    .then((buffer) => {
+      console.log(`put object: ${key}`);
       S3.putObject({
         Body: buffer,
         Bucket: BUCKET,
-        ContentType: 'image/' + extension,
+        ContentType: `image/${extension}`,
         Key: key.toLowerCase()
       }).promise()
-    )
-    .then(() => context.succeed({
-      statusCode: '301',
-      headers: { 'location': `${URL}/${key}` },
-      body: ''
     })
-    )
+    .then(() => {
+      console.log(`success redirect to: ${URL}/${key}`);
+      context.succeed({
+        statusCode: '301',
+        headers: { 'location': `${URL}/${key}` },
+        body: ''
+      })
+    })
     .catch((err) => {
       console.log('something here', err);
       context.fail(err)

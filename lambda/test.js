@@ -1,11 +1,24 @@
 event = {
     queryStringParameters: {
+        key: 'artists/a.leonash/portfolio1/images_large/image1_200_100.jpg'
+    }
+}
+
+event = {
+    queryStringParameters: {
+        key: 'books/z/zg693/zg693_200_200.jpg'
+    }
+}
+var i = require('./index')
+i.handler(event, null)
+
+event = {
+    queryStringParameters: {
         key: 'books/z/zg693/zg693_200_200.jpg'
     }
 }
 
 var i = require('./index')
-
 i.handler(event, null)
 
 event = {
