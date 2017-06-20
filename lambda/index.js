@@ -25,6 +25,7 @@ exports.handler = function (event, context) {
     width = parseInt(keys.slice(-3)[0], 10);
     height = parseInt(keys.slice(-2)[0], 10);
     baseImage = keys_.slice(0, -2).join('_');
+
   }
   else {
     width = parseInt(keys.slice(-2)[0], 10);   
@@ -35,6 +36,10 @@ exports.handler = function (event, context) {
 
   if (extension.toLowerCase() == 'jpg') {
     extension = 'jpeg';
+  }
+
+  if (width <= 0) {
+  	width = null;
   }
 
   console.log(`getObject: ${BUCKET}/${originalKey}`);
