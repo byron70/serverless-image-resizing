@@ -17,7 +17,7 @@ exports.handler = function (event, context) {
   var height;
   var extension = keys.slice(-1)[0];
   var widthAndHeight = (
-    keys.length >= 3 
+    keys.length >= 3
     && !isNaN(parseInt(keys.slice(-3)[0]))
     && !isNaN(parseInt(keys.slice(-2)[0])));
 
@@ -25,21 +25,20 @@ exports.handler = function (event, context) {
     width = parseInt(keys.slice(-3)[0], 10);
     height = parseInt(keys.slice(-2)[0], 10);
     baseImage = keys_.slice(0, -2).join('_');
-
   }
   else {
-    width = parseInt(keys.slice(-2)[0], 10);   
+    width = parseInt(keys.slice(-2)[0], 10);
     baseImage = keys_.slice(0, -1).join('_');
-  }  
-  
+  }
+
   var originalKey = baseImage + '.' + extension;
 
   if (extension.toLowerCase() == 'jpg') {
     extension = 'jpeg';
   }
 
-  if (width <= 0) {
-  	width = null;
+  if (width <= 0){
+    width = null;
   }
 
   console.log(`getObject: ${BUCKET}/${originalKey}`);
