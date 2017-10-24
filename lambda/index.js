@@ -7,11 +7,12 @@ var URL = process.env.URL;
 
 BUCKET = 'images.photoeye.com';
 
-exports.handler = function (event, context) {
-  console.log(event.queryStringParameters.key);
-  var key = event.queryStringParameters.key;
+exports.handler = function (event, context, callback) {
+  console.log(event.params);
+  var key = event.params.querystring.key;
   var keys = key.split(/_|\./);
   var keys_ = key.split(/_/);
+  var imageBase64;
   var baseImage;
   var width;
   var height;
@@ -64,24 +65,24 @@ exports.handler = function (event, context) {
     }
     )
     .then((buffer) => {
+      imageBase64 = buffer.toString('base64');
       console.log(`put object: ${key}`);
-      S3.putObject({
+      return S3.putObject({
         Body: buffer,
         Bucket: BUCKET,
         ContentType: `image/${extension}`,
         Key: key.toLowerCase()
       }).promise()
     })
-    .then(() => {
-      console.log(`success redirect to: ${URL}/${key}`);
-      context.succeed({
-        statusCode: '301',
-        headers: { 'location': `${URL}/${key}` },
-        body: ''
-      })
+    .then((data) => {
+      console.log(`return image ${key}`);
+      callback(null, imageBase64);
     })
     .catch((err) => {
       console.log('something here', err);
-      context.fail(err)
+      callback(err, null);
     })
 }
+
+// artists/edwardranney/portfolio3/images_large/image10_0_111.jpg
+// https://1lefrvaye0.execute-api.us-east-1.amazonaws.com/prod/resize?key=artists/edwardranney/portfolio3/images_large/image10_0_240.jpg

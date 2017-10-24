@@ -6,11 +6,11 @@ WORKDIR /tmp
 
 RUN yum -y install gcc-c++ && \
     rpm --import /etc/nodesource.gpg.key && \
-    curl --location --output ns.rpm https://rpm.nodesource.com/pub_4.x/el/7/x86_64/nodejs-4.3.2-1nodesource.el7.centos.x86_64.rpm && \
+    curl --location --output ns.rpm https://rpm.nodesource.com/pub_6.x/el/7/x86_64/nodejs-6.10.3-1nodesource.el7.centos.x86_64.rpm && \
     rpm --checksig ns.rpm && \
     rpm --install --force ns.rpm && \
     npm install -g npm@latest && \
-    npm cache clean && \
+    npm cache verify && \
     yum clean all && \
     rm --force ns.rpm
 

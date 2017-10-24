@@ -1,41 +1,12 @@
 event = {
-    queryStringParameters: {
-        key: 'artists/a.leonash/portfolio1/images_large/image1_200_100.jpg'
-    }
-}
-
-event = {
-    queryStringParameters: {
-        key: 'books/z/zg693/zg693_200_200.jpg'
-    }
-}
-var i = require('./index')
-i.handler(event, null)
-
-event = {
-    queryStringParameters: {
-        key: 'books/z/zg693/zg693_200_200.jpg'
+    params: {
+        querystring: {
+        key: 'artists/edwardranney/portfolio3/images_large/image10_0_111.jpg'
+        }
     }
 }
 
 var i = require('./index')
-i.handler(event, null)
-
-event = {
-    queryStringParameters: {
-        key: 'books/z/zg693/zg693_200_100.jpg'
-    }
-}
-
-var i = require('./index')
-i.handler(event, null)
-
-
-event = {
-    queryStringParameters: {
-        key: 'books/z/zg693/zg693_100_200.jpg'
-    }
-}
-
-var i = require('./index')
-i.handler(event, null)
+i.handler(event, null, function(err, data){
+    console.log(data);
+})
